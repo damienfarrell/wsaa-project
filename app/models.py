@@ -21,3 +21,11 @@ class Film(Base):
 
     def __repr__(self) -> str:
         return f"<Note {self.title} at {self.created_at}>"
+    
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(nullable=False, unique=True)
+    password: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=text("now()"))
