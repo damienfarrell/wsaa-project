@@ -4,7 +4,7 @@ from sqlalchemy.future import select
 from sqlalchemy import update
 from typing import List
 from ..database import get_db
-from .. import models, schemas
+from .. import models, schemas, oauth2
 
 router = APIRouter(
     prefix="/films",
@@ -18,7 +18,7 @@ def read_films(db: Session = Depends(get_db)):
     return result
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.FilmSchemaResponse)
-def create_films(film: schemas.CreateFilm, db: Session = Depends(get_db)):
+def create_films(film: schemas.CreateFilm, db: Session = Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
     new_film = models.Film(**film.model_dump())
     db.add(new_film)
     db.commit()
