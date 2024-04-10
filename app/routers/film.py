@@ -18,7 +18,7 @@ def read_films(db: Session = Depends(get_db)):
     return result
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.FilmSchemaResponse)
-def create_films(film: schemas.CreateFilm, db: Session = Depends(get_db), user_id: int = Depends(oauth2.get_current_user)):
+def create_films(film: schemas.CreateFilm, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     new_film = models.Film(**film.model_dump())
     db.add(new_film)
     db.commit()
@@ -34,7 +34,7 @@ def read_film_by_id(id: int, db: Session = Depends(get_db)):
     return result
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_film(id: int, db: Session = Depends(get_db)):
+def delete_film(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     # Find the film by id
     statement = select(models.Film).where(models.Film.id == id)
     film_to_delete = db.execute(statement).scalars().one_or_none()
@@ -44,7 +44,7 @@ def delete_film(id: int, db: Session = Depends(get_db)):
     db.commit()
 
 @router.put("/{id}", response_model=schemas.FilmSchemaResponse)
-def update_film(id: int, film: schemas.UpdateFilm, db: Session = Depends(get_db)):
+def update_film(id: int, film: schemas.UpdateFilm, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     updated_film_data = film.model_dump(exclude_unset=True)
     statement = update(models.Film).where(models.Film.id == id).values(**updated_film_data)
     result = db.execute(statement)
