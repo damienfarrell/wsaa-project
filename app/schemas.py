@@ -2,6 +2,18 @@ from datetime import datetime
 from typing import Union, Optional
 from pydantic import BaseModel, EmailStr
 
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+class  UserResponse(BaseModel):
+    id: int
+    email: EmailStr
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
 class FilmSchemaBase(BaseModel):
     title: str
     is_watched: Union[bool, None] = None
@@ -17,19 +29,9 @@ class UpdateFilm(FilmSchemaBase):
 class FilmSchemaResponse(FilmSchemaBase):
     id: int
     created_at: datetime
+    user_id: int
+    user: UserResponse
 
-    class Config:
-        from_attributes = True
-
-class UserCreate(BaseModel):
-    email: EmailStr
-    password: str
-
-class  UserResponse(BaseModel):
-    id: int
-    email: EmailStr
-    created_at: datetime
-    
     class Config:
         from_attributes = True
 
