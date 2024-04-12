@@ -3,8 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import database_login
 
-#### TODO REMOVE PASSWORD
-
 SQLALCHEMY_DATABASE_URL = database_login
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
