@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
+    postgres_password: str
+    postgres_db: str
 
     class Config:
         env_file = ".env"

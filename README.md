@@ -19,6 +19,20 @@ This repository contains the project for the Web Services and Applications modul
 >- You should also create the web pages that can consume the API. I.e. performs
 >- CRUD operations on the data.
 
-### **Project Brief**
+### **Project Details**
 
 Project Details Here
+
+### **References:**
+
+Python API Development - Comprehensive Course for Beginners
+https://www.youtube.com/watch?v=0sOvCWFmrtA
+
+How to Use FastAPI: A Detailed Python Tutorial
+https://www.youtube.com/watch?v=SORiTsvnU28
+
+SQLAlchemy: The BEST SQL Database Library in Python
+https://www.youtube.com/watch?v=aAy-B6KPld8
+
+How I deploy serverless containers for free
+https://www.youtube.com/watch?v=cw34KMPSt4k
