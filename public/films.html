@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <title>My Films</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+</head>
+<body>
+    <h1>My Films</h1>
+    <ul id="film-list" hx-get="http://127.0.0.1:8000/films/" hx-trigger="load" hx-headers='{"Authorization":"Bearer TOKEN"}'>
+    </ul>
+    <script>
+        document.body.addEventListener('htmx:configRequest', function (event) {
+            const token = localStorage.getItem('token');
+            if (token) {
+                event.detail.headers['Authorization'] = 'Bearer ' + token;
+            }
+        });
+
+        document.body.addEventListener('htmx:responseError', function (event) {
+            if (event.detail.xhr.status === 401 || event.detail.xhr.status === 403) {
+                document.body.innerHTML = '<p>Failed to load films. Please log in again.</p>';
+            }
+        });
+    </script>
+
+</body>
+</html>
