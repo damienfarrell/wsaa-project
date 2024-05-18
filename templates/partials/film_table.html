@@ -1,6 +1,22 @@
 {% for film in films %}
-    <tr>
-        <td class="border">{{ film.id }}</td>
-        <td class="border">{{ film.name }}</td>
-    </tr>
+<tr>
+    <td class="centre-checkbox"><input type="checkbox" name="watched" hx-post="/films/{{ film.id }}/watched" hx-include="closest tr"></td>
+    <td>{{ film.id }}</td>
+    <td>{{ film.title }}</td>
+    <td>
+        <div class="star-rating">
+            <input type="radio" id="star1-{{ film.id }}" name="rating-{{ film.id }}" value="1" hx-post="/films/{{ film.id }}/rate" hx-include="closest tr">
+            <label for="star1-{{ film.id }}">&#9733;</label>
+            <input type="radio" id="star2-{{ film.id }}" name="rating-{{ film.id }}" value="2" hx-post="/films/{{ film.id }}/rate" hx-include="closest tr">
+            <label for="star2-{{ film.id }}">&#9733;</label>
+            <input type="radio" id="star3-{{ film.id }}" name="rating-{{ film.id }}" value="3" hx-post="/films/{{ film.id }}/rate" hx-include="closest tr">
+            <label for="star3-{{ film.id }}">&#9733;</label>
+            <input type="radio" id="star4-{{ film.id }}" name="rating-{{ film.id }}" value="4" hx-post="/films/{{ film.id }}/rate" hx-include="closest tr">
+            <label for="star4-{{ film.id }}">&#9733;</label>
+            <input type="radio" id="star5-{{ film.id }}" name="rating-{{ film.id }}" value="5" hx-post="/films/{{ film.id }}/rate" hx-include="closest tr">
+            <label for="star5-{{ film.id }}">&#9733;</label>
+        </div>
+    </td>
+    <td><input type="text" name="comment" placeholder="Add a comment" hx-post="/films/{{ film.id }}/comment" hx-include="closest tr"></td>
+</tr>
 {% endfor %}

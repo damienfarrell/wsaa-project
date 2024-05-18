@@ -7,43 +7,117 @@
     <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
-    <title>Films To Watch</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/json-enc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Film Watch List</title>
+
+    <style>
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-start;
+        }
+    
+        .star-rating input {
+            display: none;
+        }
+    
+        .star-rating label {
+            font-size: 1.5rem;
+            color: #ddd;
+            cursor: pointer;
+        }
+    
+        .star-rating input:checked ~ label,
+        .star-rating input:hover ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #f5b301;
+        }
+
+        .star-rating label {
+            margin: 0 20px;
+        }
+    </style>
+
 </head>
 
 <body>
 
-    <div>
-    
-        <p>Film List</p>
-        
-            <table>
+    <div id="content">
+        <!-- Login Form -->
+        <div id="login">
+            <h1>Login</h1>
+            <form hx-post="http://127.0.0.1:8000/login" hx-on="htmx:afterRequest: login(event)" hx-trigger="submit">
+                <label for="username">Email:</label>
+                <input name="username" type="email" id="username" required>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <!-- Add Film (Initially hidden) -->
+        <div id="add-film" style="display: none; padding-bottom: 30px;">
+            <h1>Films To Watch</h1>
+            <form id="add-film-form" hx-post="http://127.0.0.1:8000/films/" hx-headers='{"Content-Type": "application/json"}' hx-ext='json-enc'>
+                <table>
+                    <tr>
+                        <td><input type="text" name="title" placeholder="Enter Film Title" required></td>
+                        <td><button type="submit">Add Film</button></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+        <!-- Film List (Initially hidden) -->
+        <section id="films" style="display: none;" hx-get="http://127.0.0.1:8000/films/" hx-target="#film-table" hx-swap="beforeend" hx-trigger="load">
+            <table class="striped">
                 <thead>
                     <tr>
-                      <th>Film ID</th>
-                      <th>Film Director</th>
+                        <th>Watched?</th>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
                     </tr>
-                  </thead>
-                  <tbody id="table-body">
-                      {% include 'partials/film_table.html' %}
-                  </tbody>
+                </thead>
+                <tbody id="film-table">
+                    <!-- film_table -->
+                </tbody>
             </table>
-        
-            <button hx-get="http://127.0.0.1:8000/films/"
-                    hx-target="#table-body"
-                    hx-swap="beforeend">Load More</button>
-                
-    </div>
-    
-<script>
-    console.log('Token on index.html:', localStorage.getItem('access_token'));
-    document.body.addEventListener('htmx:configRequest', function(evt) {
-        const access_token = localStorage.getItem('access_token');
-        if (access_token) {
-            evt.detail.headers['Authorization'] = 'Bearer ' + access_token;
+        </section>
+
+    <script>
+        function login(event) {
+            if (event.detail.xhr.status === 200) {
+                const response = JSON.parse(event.detail.xhr.responseText);
+                const access_token = response.access_token;
+                localStorage.setItem('access_token', access_token);  // Save the access token
+                // Swap login with films
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('films').style.display = 'block';
+                document.getElementById('add-film').style.display = 'block';
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: event.detail.xhr.responseText,
+                });
+            }
         }
-    });
-</script>
 
+        document.body.addEventListener('htmx:configRequest', function(evt) {
+            const access_token = localStorage.getItem('access_token');
+            if (access_token) {
+                evt.detail.headers['Authorization'] = 'Bearer ' + access_token;
+            }
+        });
 
-    </body>
-    </html>
+    </script>
+
+</body>
+
+</html>

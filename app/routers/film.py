@@ -15,20 +15,22 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=List[schemas.FilmSchemaResponse])
-def read_films(request: Request, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),
+def read_films(request: Request, hx_request: Optional[str] = Header(None), db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),
                limit: int = 10, skip: int = 0, search: Optional[str] = ""):
     statement = select(models.Film).where(models.Film.user_id == current_user.id, models.Film.title.contains(search)).limit(limit).offset(skip)
     result = db.execute(statement).scalars().all()
-    if "text/html" in request.headers.get("accept", ""):
-        return templates.TemplateResponse("index.html", {"request": request, "films": result, "current_user": current_user})
+    if hx_request:
+        return templates.TemplateResponse("partials/film_table.html", {"request": request, "films": result, "current_user": current_user})
     return result
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.FilmSchemaResponse)
-def create_films(film: schemas.CreateFilm, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+def create_films(film: schemas.CreateFilm, request: Request, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user), hx_request: Optional[str] = Header(None)):
     new_film = models.Film(user_id=current_user.id, **film.model_dump())
     db.add(new_film)
     db.commit()
     db.refresh(new_film)
+    if hx_request:
+        return templates.TemplateResponse("partials/film_add_item.html", {"request": request, "film": new_film})
     return new_film
 
 @router.get("/{id}", response_model=schemas.FilmSchemaResponse)
