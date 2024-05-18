@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+    <title>Films To Watch</title>
+</head>
+
+<body>
+
+    <div>
+    
+        <p>Film List</p>
+        
+            <table>
+                <thead>
+                    <tr>
+                      <th>Film ID</th>
+                      <th>Film Director</th>
+                    </tr>
+                  </thead>
+                  <tbody id="table-body">
+                      {% include 'partials/film_table.html' %}
+                  </tbody>
+            </table>
+        
+            <button hx-get="http://127.0.0.1:8000/films/"
+                    hx-target="#table-body"
+                    hx-swap="beforeend">Load More</button>
+                
+    </div>
+    
+<script>
+    console.log('Token on index.html:', localStorage.getItem('access_token'));
+    document.body.addEventListener('htmx:configRequest', function(evt) {
+        const access_token = localStorage.getItem('access_token');
+        if (access_token) {
+            evt.detail.headers['Authorization'] = 'Bearer ' + access_token;
+        }
+    });
+</script>
+
+
+    </body>
+    </html>

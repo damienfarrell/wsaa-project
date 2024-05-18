@@ -4,6 +4,7 @@ from .database import engine
 from .routers import film, user, auth
 from fastapi.middleware.cors import CORSMiddleware
 
+
 app = FastAPI()
 
 origins = ["*"]

@@ -31,4 +31,11 @@ Project Details Here
 
 [SQLAlchemy: The BEST SQL Database Library in Python](https://www.youtube.com/watch?v=aAy-B6KPld8)
 
+[FastAPI with Jinja2 in UNDER 6 minutes](https://www.youtube.com/watch?v=92iCfXAK0Gc)
+
+[FastAPI Python framework - Returning HTML templates (with HTMX integration)](https://www.youtube.com/watch?v=yu0TbJ2BQso)
+
+[FastAPI Python framework - SQLAlchemy and Database integration](https://www.youtube.com/watch?v=8SPF6TBVj28)
+
+
 [How I deploy serverless containers for free](https://www.youtube.com/watch?v=cw34KMPSt4k)

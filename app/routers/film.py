@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
+from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter, Request, Header
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from sqlalchemy.future import select
 from sqlalchemy import update
@@ -6,16 +7,20 @@ from typing import List, Optional
 from ..database import get_db
 from .. import models, schemas, oauth2
 
+templates = Jinja2Templates(directory="templates")
+
 router = APIRouter(
     prefix="/films",
     tags=["Films"]
 )
 
 @router.get("/", response_model=List[schemas.FilmSchemaResponse])
-def read_films(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),
+def read_films(request: Request, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),
                limit: int = 10, skip: int = 0, search: Optional[str] = ""):
     statement = select(models.Film).where(models.Film.user_id == current_user.id, models.Film.title.contains(search)).limit(limit).offset(skip)
     result = db.execute(statement).scalars().all()
+    if "text/html" in request.headers.get("accept", ""):
+        return templates.TemplateResponse("index.html", {"request": request, "films": result, "current_user": current_user})
     return result
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.FilmSchemaResponse)
@@ -27,11 +32,13 @@ def create_films(film: schemas.CreateFilm, db: Session = Depends(get_db), curren
     return new_film
 
 @router.get("/{id}", response_model=schemas.FilmSchemaResponse)
-def read_film_by_id(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+def read_film_by_id(request: Request, id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     statement = select(models.Film).where(models.Film.id == id, models.Film.user_id == current_user.id)
     result = db.execute(statement).scalars().one_or_none()
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Film with id: {id} was not found")
+    if "text/html" in request.headers.get("accept", ""):
+        return templates.TemplateResponse("index.html", {"request": request, "film": result})
     return result
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)

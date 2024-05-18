@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Login</title>
+</head>
+
+<body>
+    <div>
+        <h1>Login</h1>
+        <form hx-post="http://127.0.0.1:8000/login" hx-on="htmx:afterRequest: redirectOnSuccess(event)" hx-trigger="submit">
+            <label for="username">Email:</label>
+            <input name="username" type="email" id="username" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        function redirectOnSuccess(event) {
+            if (event.detail.xhr.status === 200) {  // Check if the request was successful
+                const response = JSON.parse(event.detail.xhr.responseText);
+                const access_token = response.access_token;
+                localStorage.setItem('access_token', access_token);  // Save the access token if needed
+                console.log('Token stored:', localStorage.getItem('access_token'));  // Check token
+                window.location.href = 'index.html';  // Redirect to the desired page
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: event.detail.xhr.responseText,
+                });
+            }
+        }
+    
+        document.body.addEventListener('htmx:configRequest', function(evt) {
+            const access_token = localStorage.getItem('access_token');
+            if (access_token) {
+                evt.detail.headers['Authorization'] = 'Bearer ' + access_token;
+            }
+        });
+    </script>
+    
+
+</body>
+
+</html>
