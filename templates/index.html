@@ -54,9 +54,11 @@
             <form hx-post="http://127.0.0.1:8000/login" hx-on="htmx:afterRequest: login(event)" hx-trigger="submit">
                 <label for="username">Email:</label>
                 <input name="username" type="email" id="username" required>
+                
 
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
+                
 
                 <button type="submit">Login</button>
                 <button type="button" onclick="showRegisterForm()">Register</button>
@@ -66,7 +68,7 @@
         <!-- Register Form (Initially hidden) -->
         <div id="register" style="display: none;">
             <h1>Register</h1>
-            <form hx-post="http://127.0.0.1:8000/users" hx-on="htmx:afterRequest: register(event)" hx-trigger="submit" hx-ext='json-enc'>
+            <form hx-post="http://127.0.0.1:8000/users" hx-trigger="submit" hx-ext='json-enc'>
                 <label for="reg-username">Email:</label>
                 <input name="email" type="email" id="reg-username" required>
 
@@ -125,23 +127,6 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Login Failed',
-                    text: event.detail.xhr.responseText,
-                });
-            }
-        }
-
-        function register(event) {
-            if (event.detail.xhr.status === 201) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Registration Successful',
-                    text: 'You can now login with your credentials.',
-                });
-                showLoginForm();
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Registration Failed',
                     text: event.detail.xhr.responseText,
                 });
             }

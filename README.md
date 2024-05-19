@@ -28,9 +28,12 @@ The front end has a ton of bugs and issues. Just refresh often. The back end is 
 
 It does not work. Could not use PythonAnywhere as FastAPI is not supported which came around to bite me in the butt. Set up a VM on Digital Ocean but I have ran out of time and the app does not work.
 
-**Live Application**: [http://143.110.162.143:8000/](http://143.110.162.143:8000/)
+**Live Application**:
+
+[http://143.110.162.143:8000/](http://143.110.162.143:8000/)
 
 **API Documentation**:
+
 - Swagger UI: [http://143.110.162.143:8000/docs#/](http://143.110.162.143:8000/docs#/)
 - ReDoc: [http://143.110.162.143:8000/redoc](http://143.110.162.143:8000/redoc)
 
