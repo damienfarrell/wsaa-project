@@ -16,7 +16,7 @@ router = APIRouter(
 
 @router.get("/", response_model=List[schemas.FilmSchemaResponse])
 def read_films(request: Request, hx_request: Optional[str] = Header(None), db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),
-               limit: int = 10, skip: int = 0, search: Optional[str] = ""):
+               limit: int = 50, skip: int = 0, search: Optional[str] = ""):
     statement = select(models.Film).where(models.Film.user_id == current_user.id, models.Film.title.contains(search)).limit(limit).offset(skip)
     result = db.execute(statement).scalars().all()
     if hx_request:
@@ -30,7 +30,7 @@ def create_films(film: schemas.CreateFilm, request: Request, db: Session = Depen
     db.commit()
     db.refresh(new_film)
     if hx_request:
-        return templates.TemplateResponse("partials/film_add_item.html", {"request": request, "film": new_film})
+        return templates.TemplateResponse("partials/film_row.html", {"request": request, "film": new_film})
     return new_film
 
 @router.get("/{id}", response_model=schemas.FilmSchemaResponse)
@@ -44,7 +44,7 @@ def read_film_by_id(request: Request, id: int, db: Session = Depends(get_db), cu
     return result
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_film(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+def delete_film(request: Request, id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user), hx_request: Optional[str] = Header(None)):
     statement = select(models.Film).where(models.Film.id == id)
     film_to_delete = db.execute(statement).scalars().one_or_none()
     if film_to_delete is None:
@@ -55,7 +55,7 @@ def delete_film(id: int, db: Session = Depends(get_db), current_user: int = Depe
     db.commit()
 
 @router.put("/{id}", response_model=schemas.FilmSchemaResponse)
-def update_film(id: int, film: schemas.UpdateFilm, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+def update_film(request: Request, id: int, film: schemas.UpdateFilm, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user), hx_request: Optional[str] = Header(None)):
     updated_film_data = film.model_dump(exclude_unset=True)
     existing_film = db.execute(
         select(models.Film).where(models.Film.id == id)
@@ -70,4 +70,15 @@ def update_film(id: int, film: schemas.UpdateFilm, db: Session = Depends(get_db)
     updated_film = db.execute(
         select(models.Film).where(models.Film.id == id)
     ).scalars().first()
+    if hx_request:
+        if film.is_watched is not None:
+            return templates.TemplateResponse("partials/film_row.html", {"request": request, "film": updated_film})
+        else:
+            statement = update(models.Film).where(models.Film.id == id).values(is_watched=False)
+            db.execute(statement)
+            db.commit()
+            updated_film = db.execute(
+                select(models.Film).where(models.Film.id == id)
+            ).scalars().first()
+            return templates.TemplateResponse("partials/film_row.html", {"request": request, "film": updated_film})
     return updated_film

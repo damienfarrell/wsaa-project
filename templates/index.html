@@ -10,28 +10,31 @@
     <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/json-enc.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Film Watch List</title>
-
     <style>
+        .hidden {
+            display: none;
+        }
+
         .star-rating {
             display: flex;
             flex-direction: row-reverse;
             justify-content: flex-start;
         }
-    
+
         .star-rating input {
             display: none;
         }
-    
+
         .star-rating label {
             font-size: 1.5rem;
             color: #ddd;
             cursor: pointer;
         }
-    
-        .star-rating input:checked ~ label,
-        .star-rating input:hover ~ label,
+
+        .star-rating input:checked~label,
+        .star-rating input:hover~label,
         .star-rating label:hover,
-        .star-rating label:hover ~ label {
+        .star-rating label:hover~label {
             color: #f5b301;
         }
 
@@ -39,41 +42,57 @@
             margin: 0 20px;
         }
     </style>
-
 </head>
 
-<body>
+<body class="hidden">
 
-    <div id="content">
+    <!-- Main -->
+    <main class="container" id="content">
         <!-- Login Form -->
         <div id="login">
             <h1>Login</h1>
             <form hx-post="http://127.0.0.1:8000/login" hx-on="htmx:afterRequest: login(event)" hx-trigger="submit">
                 <label for="username">Email:</label>
                 <input name="username" type="email" id="username" required>
-                
+
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
-                
+
                 <button type="submit">Login</button>
+                <button type="button" onclick="showRegisterForm()">Register</button>
+            </form>
+        </div>
+
+        <!-- Register Form (Initially hidden) -->
+        <div id="register" style="display: none;">
+            <h1>Register</h1>
+            <form hx-post="http://127.0.0.1:8000/users" hx-on="htmx:afterRequest: register(event)" hx-trigger="submit" hx-ext='json-enc'>
+                <label for="reg-username">Email:</label>
+                <input name="email" type="email" id="reg-username" required>
+
+                <label for="reg-password">Password:</label>
+                <input type="password" id="reg-password" name="password" required>
+
+                <button type="submit">Register</button>
+                <button type="button" onclick="showLoginForm()">Back to Login</button>
             </form>
         </div>
 
         <!-- Add Film (Initially hidden) -->
         <div id="add-film" style="display: none; padding-bottom: 30px;">
             <h1>Films To Watch</h1>
-            <form id="add-film-form" hx-post="http://127.0.0.1:8000/films/" hx-headers='{"Content-Type": "application/json"}' hx-ext='json-enc'>
+            <form id="add-film-form">
                 <table>
                     <tr>
                         <td><input type="text" name="title" placeholder="Enter Film Title" required></td>
-                        <td><button type="submit">Add Film</button></td>
+                        <td><button type="submit" hx-post="http://127.0.0.1:8000/films/" hx-headers='{"Content-Type": "application/json"}' hx-ext='json-enc' hx-target="#film-table" hx-swap="beforeend">Add Film</button></td>
                     </tr>
                 </table>
             </form>
         </div>
 
         <!-- Film List (Initially hidden) -->
-        <section id="films" style="display: none;" hx-get="http://127.0.0.1:8000/films/" hx-target="#film-table" hx-swap="beforeend" hx-trigger="load">
+        <section id="films" style="display: none;" hx-get="http://127.0.0.1:8000/films/" hx-target="#film-table" hx-trigger="load">
             <table class="striped">
                 <thead>
                     <tr>
@@ -81,23 +100,25 @@
                         <th>ID</th>
                         <th>Title</th>
                         <th>Rating</th>
-                        <th>Comment</th>
                     </tr>
                 </thead>
                 <tbody id="film-table">
+                    {% include 'partials/film_table.html' %}
                     <!-- film_table -->
                 </tbody>
             </table>
         </section>
+    </main>
 
     <script>
         function login(event) {
             if (event.detail.xhr.status === 200) {
                 const response = JSON.parse(event.detail.xhr.responseText);
                 const access_token = response.access_token;
-                localStorage.setItem('access_token', access_token);  // Save the access token
+                localStorage.setItem('access_token', access_token); // Save the access token
                 // Swap login with films
                 document.getElementById('login').style.display = 'none';
+                document.getElementById('register').style.display = 'none';
                 document.getElementById('films').style.display = 'block';
                 document.getElementById('add-film').style.display = 'block';
             } else {
@@ -109,6 +130,33 @@
             }
         }
 
+        function register(event) {
+            if (event.detail.xhr.status === 201) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registration Successful',
+                    text: 'You can now login with your credentials.',
+                });
+                showLoginForm();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Registration Failed',
+                    text: event.detail.xhr.responseText,
+                });
+            }
+        }
+
+        function showRegisterForm() {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('register').style.display = 'block';
+        }
+
+        function showLoginForm() {
+            document.getElementById('register').style.display = 'none';
+            document.getElementById('login').style.display = 'block';
+        }
+
         document.body.addEventListener('htmx:configRequest', function(evt) {
             const access_token = localStorage.getItem('access_token');
             if (access_token) {
@@ -116,6 +164,32 @@
             }
         });
 
+        document.addEventListener("DOMContentLoaded", function() {
+            const access_token = localStorage.getItem('access_token');
+            if (access_token) {
+                // Hide login form and show films section
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('register').style.display = 'none';
+                document.getElementById('films').style.display = 'block';
+                document.getElementById('add-film').style.display = 'block';
+            } else {
+                // Show the login form
+                document.getElementById('login').style.display = 'block';
+            }
+            // Show the body now that the check is complete
+            document.body.classList.remove('hidden');
+        });
+
+        // Listen for 401 responses and show the login form
+        document.body.addEventListener('htmx:responseError', function (event) {
+            if (event.detail.xhr.status === 401) {
+                localStorage.removeItem('access_token');
+                document.getElementById('login').style.display = 'block';
+                document.getElementById('register').style.display = 'none';
+                document.getElementById('films').style.display = 'none';
+                document.getElementById('add-film').style.display = 'none';
+            }
+        });
     </script>
 
 </body>

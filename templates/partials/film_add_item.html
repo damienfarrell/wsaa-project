@@ -1,9 +1,0 @@
-{% for film in films %}
-    <tr>
-        <td><input type="checkbox" {% if film.is_watched %}checked{% endif %}></td>
-        <td>{{ film.id }}</td>
-        <td>{{ film.title }}</td>
-        <td>{{ film.rating }}</td>
-        <td>{{ film.comment }}</td>
-    </tr>
-{% endfor %}
