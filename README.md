@@ -70,8 +70,8 @@ It does not work. Could not use PythonAnywhere as FastAPI is not supported which
 1. **Clone the repository**:
 
     ```sh
-    git clone https://github.com/yourusername/film-watch-list.git
-    cd film-watch-list
+    git clone https://github.com/damienfarrell/wsaa-project.git
+    cd wsasa-project
     ```
 2. **Build and run the application**:
 

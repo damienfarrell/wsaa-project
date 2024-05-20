@@ -51,7 +51,7 @@
         <!-- Login Form -->
         <div id="login">
             <h1>Login</h1>
-            <form hx-post="http://127.0.0.1:8000/login" hx-on="htmx:afterRequest: login(event)" hx-trigger="submit">
+            <form hx-post="http://127.0.0.1:8000/login/" hx-on="htmx:afterRequest: login(event)" hx-trigger="submit">
                 <label for="username">Email:</label>
                 <input name="username" type="email" id="username" required>
                 
@@ -68,7 +68,7 @@
         <!-- Register Form (Initially hidden) -->
         <div id="register" style="display: none;">
             <h1>Register</h1>
-            <form hx-post="http://127.0.0.1:8000/users" hx-trigger="submit" hx-ext='json-enc'>
+            <form hx-post="http://127.0.0.1:8000/users/" hx-trigger="submit" hx-ext='json-enc'>
                 <label for="reg-username">Email:</label>
                 <input name="email" type="email" id="reg-username" required>
 
