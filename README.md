@@ -71,7 +71,7 @@ It does not work. Could not use PythonAnywhere as FastAPI is not supported which
 
     ```sh
     git clone https://github.com/damienfarrell/wsaa-project.git
-    cd wsasa-project
+    cd wsaa-project
     ```
 2. **Build and run the application**:
 
