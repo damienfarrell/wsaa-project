@@ -20,22 +20,7 @@ This repository contains the project for the Web Services and Applications modul
 
 ### **Project Details**
 
-This project is a web application built using FastAPI( I hope that was ok), SQLAlchemy, PostgreSQL, Jinja2 & HTMX . It is a RESTful API and web pages to perform CRUD operations on a film watch list.
-
-The front end has a ton of bugs and issues. Just refresh often. The back end is pretty solid unless I broke it in the last few hours.
-
-### Hosting
-
-It does not work. Could not use PythonAnywhere as FastAPI is not supported which came around to bite me in the butt. Set up a VM on Digital Ocean but I have ran out of time and the app does not work.
-
-**Live Application**:
-
-[http://143.110.162.143:8000/](http://143.110.162.143:8000/)
-
-**API Documentation**:
-
-- Swagger UI: [http://143.110.162.143:8000/docs#/](http://143.110.162.143:8000/docs#/)
-- ReDoc: [http://143.110.162.143:8000/redoc](http://143.110.162.143:8000/redoc)
+This project is a web application built using FastAPI, SQLAlchemy, PostgreSQL, Jinja2 & HTMX . It is a RESTful API and web pages to perform CRUD operations on a film watch list.
 
 ## Features
 
